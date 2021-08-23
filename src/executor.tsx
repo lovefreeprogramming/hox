@@ -1,11 +1,13 @@
 import { ModelHook } from "./types";
-import { ReactElement } from "react";
+import {ReactElement, useLayoutEffect} from "react";
 
 export function Executor<T>(props: {
   hook: () => ReturnType<ModelHook<T>>;
   onUpdate: (data: T) => void;
 }) {
   const data = props.hook();
-  props.onUpdate(data);
+  useLayoutEffect(()=>{
+    props.onUpdate(data);
+  })
   return null as ReactElement;
 }
