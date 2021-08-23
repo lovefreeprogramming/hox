@@ -1,37 +1,35 @@
-English | [简体中文](./README-cn.md)
-
 # hox
 
-> The next-generation state manager for React.
+> 下一代 React 状态管理器
 
 [![npm version](https://img.shields.io/npm/v/hox.svg?logo=npm)](https://www.npmjs.com/package/hox)
 [![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/hox.svg?logo=javascript)](https://www.npmjs.com/package/hox)
 ![React](https://img.shields.io/npm/dependency-version/hox/peer/react?logo=react)
 
-## Features
+## 特性
 
-- Just one API, simple and efficient. Almost no learning cost.
-- Define model with custom Hooks.
-- Perfect typescript support.
-- Supports multiple data sources.
+- 只有一个 API，简单高效，几乎无需学习成本
+- 使用 custom Hooks 来定义 model，完美拥抱 React Hooks
+- 完美的 TypeScript 支持
+- 支持多数据源，随用随取
 
-## Try It Online
+## 在线体验
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-app-with-hox-2gvgg)
 
-## Install
+## 安装
 
 ```bash
 yarn add hox
-# Or
+# 或
 npm install --save hox
 ```
 
-## Quick Start
+## 快速上手
 
-### Create a model
+### 创建一个 model
 
-In hox, you can process a custom Hook with `createModel` to make it persistent and globally shared.
+在 hox 中，任意的 custom Hook，经过 `createModel` 包装后，就变成了持久化，且全局共享的数据。
 
 ```jsx
 import { useState } from "react";
@@ -51,11 +49,11 @@ function useCounter() {
 export default createModel(useCounter);
 ```
 
-> By calling `createModel`, hox will return a new custom Hook, which is used for retrieving model data. Furthermore, we can [pass values to custom hooks](#Pass-values-to-custom-hooks) to the second parameter of createModels for custom hooks.
+> 通过 `createModel` ， hox 会返回一个新的 custom Hook，用来获取 model 的数据。`createModel` 还可以接收第二个参数，便于[给 custom hook 传参](#给-custom-hook-传参)
 
-## Use model
+### 使用 model
 
-In order to retrieve the data of counter model, you need to import and call `useCounterModel` in your components.
+还记得刚刚 `createModel` 的返回值吗？在组件中调用这个 Hook ，就可以获取到 model 的数据了。
 
 ```jsx
 import useCounterModel from "../models/counter";
@@ -71,15 +69,15 @@ function App(props) {
 }
 ```
 
-`useCounterModel` is a real Hook. By calling it, you can subscribe to the updates of data. So if you click the "Increment" button, the update of counter model will be triggered, and finally, hox will notify all components or Hooks using `useCounterModel`.
+`useCounterModel` 是一个真正的 Hook，会订阅数据的更新。也就是说，当点击 "Increment" 按钮时，会触发 counter model 的更新，并且最终通知所有使用 `useCounterModel` 的组件或 Hook。
 
-## Advanced Usages
+## 进阶用法
 
-### Pass values to custom hooks
+### 给 custom hook 传参
 
-In some scenarios, we might want to pass values to custom hooks.
+当一个 custom hook 被用于不同的场景下，我们希望它们可以拥有不同的参数。
 
-Just like the example below, we could pass a value to the second parameter of createModel for the custom hook. This is the best time to set the initial value for `useState`, etc.
+如下方的例子一样，我们可以通过 `createModel` 的第二个参数，为 custom hook 设置一个参数。这是设置初始值的最佳时机。
 
 ```jsx
 import { useState } from "react";
@@ -100,13 +98,13 @@ const useCounterModel = createModel(useCounter);
 const useCounterModelWithInitialValue = createModel(useCounter, 20);
 ```
 
-### Dependencies between models
+### model 之间的依赖
 
-Although you can still design your model according to the traditional single data source pattern, we recommend splitting the big model into small parts. Therefore inevitably, we need to handle dependencies between multiple models. For example, the `order` model depends on the `account` model.
+虽然你仍然可以按照传统的单一数据源的思想进行 model 的设计，但我们更推荐将 model 拆分成多个小部分，于是不可避免的，我们需要在多个 model 之间处理依赖关系，例如订单模块 `order` 依赖账户模块 `account` 。
 
-In hox, handling these depdencies is actually quite simple and straightforward: You can call `useXxxModel` to retrieve another model and subscribe its updates. Just like what you can do in components.
+在 hox 中，处理模块之间的依赖非常简单且自然：在一个 model 中可以直接使用 `useXXXModel` 来获取另一个 model，并订阅其更新，和在组件中使用并无两样。
 
-> Caution: Be careful with circular dependencies!
+> 提醒：小心循环依赖！
 
 ```jsx
 import { useCounterModel } from "./counter";
@@ -120,23 +118,25 @@ export function useCounterDouble() {
 }
 ```
 
-### Readonly
+### 只读不订阅更新
 
-In some scenarios, we only want to read the current value of a model, without subscribing to its updates.
+在某些场景下，我们只希望读取当前 model 的值，而不希望订阅其更新。
 
-Just like the example below, we can read the current value of counter model from `useCounterModel.data`.
+如下面的例子一样，我们可以通过 `useCounterModel.data` 来读取当前 model 中值，而不订阅它的更新。
 
-> `useCounterModel.data` is not Hook, you can use it anywhere.
+> `useCounterModel.data` 不是一个 Hook，你可以在任何场景中使用它。
 
 ```jsx
 import { useState } from "react";
 import { useCounterModel } from "./counter";
+
 export function logger() {
   const [log, setLog] = useState([]);
   const logCount = () => {
     const counter = useCounterModel.data;
     setLog(log.concat(counter));
   };
+
   return {
     log,
     logCount
@@ -144,9 +144,9 @@ export function logger() {
 }
 ```
 
-### How to use hox in class components
+### 在类组件中使用
 
-Of course, we use Hooks to define our models, but you can still retrieve and subscribe to models in class components:
+虽然 model 是使用的 Hooks 语法，但你仍然可以在类组件中获取和订阅 model ：
 
 ```jsx
 class App extends Component {
@@ -167,19 +167,19 @@ export default withModel(useCounterModel, counter => ({
 }))(App);
 ```
 
-### Performance optimization
+### 性能优化
 
-In order to control the data you want to subscribe precisely, you can pass an odditional `depsFn` function to `useXxxModel`.
+`createModel` 的返回值 `useXxxModel` 支持传入一个 `depsFn` 函数，来精确控制订阅的字段：
 
 ```jsx
 const counter = useCounterModel(model => [model.count, model.x.y]);
 ```
 
-This is very similiar to the `deps` parameter of `useMemo` or `useEffect` . But remember, the `depsFn` of `useModel` is a **function** .
+这和 `useMemo` 、 `useEffect` 的 `deps` 非常相似，但是， `useModel` 的 `depsFn` 参数是一个**函数**。
 
-In addition, we recommend splitting a large model into small parts, so that not only is the code easier to maintain, but performance can also get improved.
+此外，我们建议对一个庞大的 model 进行拆分，这样不仅代码更易于维护，性能也会有所改善。
 
-## Best Practices
+## 最佳实践
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/hox-best-practice-fszmp)
 
@@ -191,11 +191,11 @@ In addition, we recommend splitting a large model into small parts, so that not 
 declare function createModel(hook: ModelHook, hookArg?): UseModel;
 ```
 
-Create a model.
+创建一个 model 。
 
-The parameter is a custom Hook, used for defining the logic of model.
+参数是一个 custom Hook ，用于定义 model 的内部逻辑。
 
-You can call it multiple times to create multiple models:
+可以多次调用，来创建多个 model ：
 
 ```jsx
 const useCounterModelA = createModel(useCounter);
@@ -203,13 +203,13 @@ const useCounterModelB = createModel(useCounter);
 const useTimerModel = createModel(useTimer);
 ```
 
-You can also [pass values to custom hooks](#Pass-values-to-custom-hooks) to the second parameter of createModels for custom hooks.
+也可以通过第二个参数[给 custom hook 传参](#给-custom-hook-传参)。
 
-> Calling `createModel(useCounter)` two times will create two instances which are isolated from each other.
+> 两次调用 `createModel(useCounter)` 会创建 model 的两个实例，彼此相互隔离。
 
-**useModel**
+**UseModel**
 
-`UseModel` is the return type of `createModel`. It is used for retrieving model and subscribing to its updates.
+`UseModel` 是 `createModel` 的返回值类型，它用来获取 model 并订阅其更新。
 
 ```typescript
 export interface UseModel<T> {
@@ -218,11 +218,11 @@ export interface UseModel<T> {
 }
 ```
 
-The parameter `depsFn` can be omitted. And it is used for [performance optimization](#performance-optimization).
+参数 `depsFn` 可以缺省，用于[性能优化](#性能优化)。
 
-> `useModel` is a React Hook, so please follow React's [rules of hooks](https://reactjs.org/docs/hooks-rules.html).
+> `useModel` 是一个 React Hook ，所以在使用它的时候，请遵守 React 的 [rules of hooks](https://reactjs.org/docs/hooks-rules.html) 。
 
-What's more, there is `data` field on `useModel`, which is used for read the current value of model. You'll find it quite useful when you try to just read value without subscribing to its updates, or try to use model in none-react environments.
+此外，`useModel` 上还有一个 `data` 属性，用于一次性地读取 model 的数据，当你想只取值而不订阅更新时，或是试图在非 React 组件的环境中获取 model 时，它会变得非常有用。
 
 ### withModel
 
@@ -236,21 +236,21 @@ type ModelMap = {
 };
 ```
 
-`withModel` is the bridge between models and class components. If you have ever used react-redux's `connect` before, you'll find it very familiar.
+`withModel` 用来在类组件中使用 model ，它的用法类似于 react-redux 中的 `connect` 。
 
-The first parameter `useModel` describes which models need to be obtained. You can just pass one `useModel`, or multiple in the form of array.
+第一个参数 `useModel` 用来描述需要获取哪些 model ，可以只传入一个 `useModel` ，也可以以数组的形式传入多个。
 
-The second parameter `mapModelToProps` is used to define the mapping rule from model to component `props`.
+第二个参数 `mapModelToProps` 用来定义 model 到组件 `props` 的映射规则。
 
-For example:
+示例：
 
 ```js
-// subscibe to a single model
+// 订阅单个 model
 export default withModel(useCounterModel, counter => ({
   count: counter.count
 }))(App);
 
-// subscribe to multiple models
+// 订阅多个 model
 export default withModel(
   [useCounterModel, useTimerModel],
   ([counter, timer]) => ({
