@@ -7,17 +7,15 @@ import { render } from "./renderer";
 export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
   const container = new Container(hook);
   render(
-    <Executor
-      onUpdate={val => {
+    <Executor  hook={() => hook(hookArg)} onUpdate={val => {//组件Executor的渲染实例任何状态出现变化,都会进行更新通知
         container.data = val;
         container.notify();
       }}
-      hook={() => hook(hookArg)}
     />
   );
   const useModel: UseModel<T> = depsFn => {
     const [state, setState] = useState<T | undefined>(() =>
-      container ? container.data : undefined
+      container ? container.data : undefined//使用组件首次渲染得到的结果进行初始化
     );
     const depsFnRef = useRef(depsFn);
     depsFnRef.current = depsFn;
